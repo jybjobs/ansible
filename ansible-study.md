@@ -109,6 +109,7 @@
 ## 四、playbook
 
 #### 1、变量
+```
   变量名可以为字母,数字以及下划线.变量始终应该以字母开头；为了避免大小写问题,不建议使用 “驼峰式”。
     * 使用 --extra-vars（或 -e ） 选项指定变量
       eg: ansible-playbook  env.yml -e "environment_file=/etc/profile environment_config={'TEST_1':'/data'} "
@@ -129,6 +130,7 @@
       然后是在inventory定义的其它变量
       然后是由系统发现的facts
       然后是 "role默认变量", 这个是最默认的值,很容易丧失优先权
+```
 
 #### 2、facts:
     获取指定机器系统信息 可以通过setup模块获取
