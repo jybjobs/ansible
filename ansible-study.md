@@ -109,7 +109,7 @@
 ## 四、playbook
 
 #### 1、变量
-> 变量名可以为字母,数字以及下划线.变量始终应该以字母开头；为了避免大小写问题,不建议使用 “驼峰式”。
+  变量名可以为字母,数字以及下划线.变量始终应该以字母开头；为了避免大小写问题,不建议使用 “驼峰式”。
     * 使用 --extra-vars（或 -e ） 选项指定变量
       eg: ansible-playbook  env.yml -e "environment_file=/etc/profile environment_config={'TEST_1':'/data'} "
     * 通过vars模块
