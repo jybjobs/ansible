@@ -3,13 +3,14 @@
 ## 一、安装
 
 #### 1、安装条件：
-
+```
   centos7.3
   python 2.6~2.7
   linux下默认使用 sftp（如果 sftp 不可用，可在 ansible.cfg 中配置成 scp 的方式.），windows为 winrm
+```
 
 #### 2、安装：
-
+```
 - 可直接 yum安装
     sudo yum install ansible -y
 - rpm 安装
@@ -19,7 +20,7 @@
     cd ./ansible
     make rpm
     sudo rpm -Uvh ~/rpm-build/ansible-*.noarch.rpm
-
+```
 #### 3、windows支持
 
 > 以Win-server 2012 为例
