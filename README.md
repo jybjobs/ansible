@@ -1,18 +1,18 @@
 # ansible
 
 #### 1. [ansible 安装](./ansible-study.md)
-```
-* 源码安装
-2. yum/apt 安装
-```
-#### [ansible 配置](./ansible-study.md)
 
-#### [ansible Ad-Hoc](./ansible-study.md)
+> 源码安装
+> yum/apt 安装
 
-## ansible playbook
+#### 2. [ansible 配置](./ansible-study.md)
 
-## ansible role
+#### 3. [ansible Ad-Hoc](./ansible-study.md)
 
-## ansible galaxy
+#### 4. [ansible playbook](./ansible-study.md)
 
-## [ansible plugins]()
+#### 5. [ansible role](./ansible-study.md)
+
+#### 6. [ansible galaxy](./ansible-study.md)
+
+#### 7. [ansible plugins](./ansible-plugins.md)
