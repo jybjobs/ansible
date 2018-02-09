@@ -17,4 +17,4 @@
 #### 6. [ansible galaxy](./ansible-study.md)
 
 #### 7. [ansible plugins](./ansible-plugins.md)
-#### 8. [ansible windows 支持](./ansible-window.md)
+#### 8. [ansible windows 支持](./windows-ansible.md)
