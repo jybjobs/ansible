@@ -1,0 +1,16 @@
+## var_backend {{var_frontend_name}}-{{var_backend_name}}      
+backend {{var_frontend_name}}-{{var_backend_name}}
+{% if var_balance is defined %}                   
+  balance     {{var_balance}}
+{% elif var_balance is undefined %}
+  balance     roundrobin
+{% endif -%}
+{% if var_bpath is defined %}
+  acl        no_redir url_beg   {{var_bpath}}
+  reqirep ^([^\ :]*)\ /(.*)       \1\ /{{var_bpath}}\2  if !no_redir
+{% endif -%}
+{% if var_servers is defined %}
+ {% for s in var_servers %}
+ server {{ s.id }} {{ s.host }}:{{ s.port }} check {{ s.balances }}
+ {% endfor %}
+{% endif -%}    

@@ -1,0 +1,47 @@
+---
+# tasks file for haproxy
+ - name: delete config file
+   shell: rm -rf /etc/haproxy/conf.d/{{var_frontend_name}}-d-{{var_backend_name}}.cfg  
+   when: config_ops is defined and config_ops in ( 'add','delete','update') 
+ - name: rm use acls
+   lineinfile:
+     dest: "/etc/haproxy/conf.d/{{var_frontend_name}}.cfg"
+     regexp: '^  acl {{item.name}}'
+     state: absent
+   with_items: "{{var_acls}}"
+   when: var_acls is defined and config_ops is defined and config_ops in ( 'add','delete','update')
+ - name: rm use backend
+   lineinfile:
+     dest: "/etc/haproxy/conf.d/{{var_frontend_name}}.cfg"
+     regexp: '^  use_backend {{var_frontend_name}}-{{var_backend_name}}'
+     state: absent
+   when: config_ops is defined and config_ops in ( 'add','delete','update')
+ - name: sync haproxy config file
+   template:
+     src: 02-haproxy.cfg.j2
+     dest: /etc/haproxy/conf.d/{{var_frontend_name}}-d-{{var_backend_name}}.cfg
+   when: config_ops is defined and config_ops in ( 'add','update')
+ - name: add acl  config
+   lineinfile:
+     dest: "/etc/haproxy/conf.d/{{var_frontend_name}}.cfg"
+     insertbefore: '^##{{var_frontend_name }} end'
+     #line: "  acl {{item.name }} {{item.acl.recursive | default(false)}}"
+     line: "  acl {{item.0.name }} {{item.1 }}"
+   with_subelements:  
+     - "{{var_acls | selectattr('acl', 'defined') | list }}"
+     - acl
+   when: config_ops is defined and config_ops in ( 'add','update') and var_acls is defined
+ - name: add backend  config
+   lineinfile:
+        dest: "/etc/haproxy/conf.d/{{var_frontend_name}}.cfg"
+        insertbefore: '^##{{var_frontend_name }} end'
+        line: "  use_backend {{var_frontend_name}}-{{var_backend_name}}  if {{ var_acls | map(attribute='name') | join(' ') }}"
+   when: var_acls is defined and config_ops is defined and config_ops== 'add'
+ - name: add backend default  config
+   lineinfile:
+        dest: "/etc/haproxy/conf.d/{{var_frontend_name}}.cfg"
+        insertbefore: '^##{{var_frontend_name }} end'
+        line: "  default_backend {{var_frontend_name}}-{{var_backend_name}}"
+   when: var_acls is undefined and config_ops is defined and config_ops== 'add'
+ - name: restart
+   shell: /bin/bash /tmp/haconfig.sh

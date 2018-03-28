@@ -1,0 +1,4 @@
+---
+# defaults file for haproxy
+var_pool_name: "02"
+tags: install

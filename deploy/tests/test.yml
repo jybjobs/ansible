@@ -1,0 +1,11 @@
+---
+- hosts: all
+  sudo: yes
+  vars_files:
+    - /etc/ansible/roles/deploy/defaults/main.yml
+    - /etc/ansible/roles/tomcat/defaults/main.yml
+  roles: 
+    - tomcat
+    - deploy
+    - role: "{{item}}"
+      with_items: "{{roless}}"

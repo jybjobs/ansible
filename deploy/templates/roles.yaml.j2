@@ -1,0 +1,17 @@
+---
+
+- hosts: all
+  #remote_user: root
+  sudo: yes
+  #gather_facts: false
+  vars_files:
+    - /etc/ansible/roles/deploy/defaults/main.yml
+    - /etc/ansible/roles/ChristopherDavenport.universal-tomcat/defaults/main.yml
+  roles:
+{% for ro in roless %}
+    -  "{{ro}}"
+{% endfor %}
+    #- ChristopherDavenport.universal-tomcat
+    #- deploy
+    #debug: 
+  

@@ -1,0 +1,34 @@
+---
+# tasks file for haproxy
+ - name: exec branch
+   - name: sync func.sh file
+     copy: src={{ global_dir }}/func.sh dest=/tmp/func.sh
+
+   - name: config install_haproxy.sh file
+     copy: src=install_haproxy.sh dest=/tmp/install_haproxy.sh
+ 
+   - name: exec install_haproxy.sh shell
+     shell: /bin/bash /tmp/install_haproxy.sh "{{ var_manageKey }}" "{{ var_soft_download }}" {{ var_keep_version }} {{ var_mode }}
+
+   - name: sync config haproxy file
+     template:
+       src: haproxy.cfg.j2
+       dest: /etc/haproxy/haproxy.cfg
+
+   - name: exec haproxy 
+     service: 
+       name: haproxy
+       state: started
+   when: var_operate=install
+
+ - name: exec branch
+   - name: sync config haproxy fil
+     template:
+       src: haproxy.cfg.j2
+       dest: /etc/haproxy/haproxy.cfg
+    
+   - name: haproxy restart
+     service:
+       name: haproxy
+       state: restarted
+   when: var_operate=update

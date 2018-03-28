@@ -1,0 +1,24 @@
+---
+
+- hosts: all
+  sudo: yes
+  gather_facts: yes
+  vars_files:
+    - /etc/ansible/roles/deploy/defaults/main.yml
+    - /etc/ansible/roles/tomcat/defaults/main.yml
+  pre_tasks:
+    - name: 添加roles info
+      shell: "sudo sed -i '/roles:/a\\ \ \ \ - {{item}}' tests/test.yml"
+      with_items: "{{roless}}"
+      connection: local
+  tasks:
+    - include: "/etc/ansible/roles/{{item}}/tasks/main.yml"
+      with_items: "{{roless}}"
+  post_tasks: 
+    - name: delete role config
+      lineinfile:
+        dest: "tests/test.yml"
+        regexp: '- {{item}}'
+        state: absent
+      with_items: "{{roless}}"
+      connection: local

@@ -1,0 +1,14 @@
+---
+base_path: "/data"
+role_dir: /etc/ansible/roles
+global_dir: "{{ role_dir }}/deploy/files"
+global_template_dir: "{{ role_dir }}/deploy/templates"
+
+# resource install
+var_soft_server: "http://192.168.71.132/ob"
+var_yum_server: "http://192.168.71.132/ob"
+tmp_src_path: /tmp/test
+tmp_script_path: /tmp/test
+ansible_os_family: Linux
+#is_rm_base_repos: true # true/false rm yum base repos
+is_rm_base_repos: false # true/false rm yum base repos

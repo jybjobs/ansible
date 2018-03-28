@@ -1,0 +1,35 @@
+---
+# tasks file for haproxy
+ - name: delete old repo
+   shell: rm -f /etc/yum.repos.d/*
+   when: "is_rm_base_repos is defined and is_rm_base_repos == true"
+ - name: add yum repo
+   template: src={{ global_template_dir }}/res.repo.j2  dest=/etc/yum.repos.d/res.repo
+ - name: yum install haproxy depended pakages
+   yum: name={{ item }} state=latest
+   with_items:
+     - unzip
+     - wget
+     - etckeeper
+     - colordiff
+ - name: sync func.sh file
+   copy: src={{ global_dir }}/func.sh dest=/tmp/func.sh
+ - name: sync install_haproxy.sh file
+   copy: src=install_haproxy.sh dest=/tmp/install_haproxy.sh
+ - name: sync haconfig.sh file
+   copy: src=haconfig.sh dest=/tmp/haconfig.sh
+ - name: exec shell
+   shell: /bin/bash /tmp/install_haproxy.sh "{{ var_manageKey }}" "{{ var_soft_download }}" {{ var_mode }}
+ - name: create path
+   shell: mkdir -p /etc/haproxy/conf.d
+ - name: sync haproxy config file
+   template: src={{ item.src }} dest={{ item.dest }}
+   with_items:
+     - {src: 00-haproxy.cfg.j2 , dest: /etc/haproxy/conf.d/00-haproxy.cfg}
+     - {src: 01-haproxy.cfg.j2 , dest: /etc/haproxy/conf.d/main.cfg}
+ - name: restart
+   shell: /bin/bash /tmp/haconfig.sh
+# - name: haproxy server start
+#   service: 
+#     name: haproxy
+#     state: restarted

@@ -1,0 +1,6 @@
+---
+# vars file for deploy
+tmp_src_path: /tmp/test
+tmp_script_path: /tmp/test
+ansible_os_family: Linux
+deploy_ops: install

@@ -1,0 +1,78 @@
+---
+    #- name: yum install tools
+    #  yum: 
+    #    name: wget
+    ##    state: present
+    #  yum:
+    #    name: tar
+    #    state: present
+    #  when: ansible_distribution ==  "CentOS"
+    #- name: apt install tools
+    #  apt:
+    #    name: wget
+    #    state: present
+    #  apt:
+    #    name: tar
+    #    state: present
+    #  when: ansible_distribution ==  "Ubuntu"
+    - name: mkdir src path if not
+      shell: "mkdir -p {{tmp_src_path}} && mkdir -p {{tmp_script_path}}"
+      when: source_url is defined
+      delegate_to: localhost
+    - name: mkdir script path if not
+      shell: "mkdir -p {{tmp_src_path}} && mkdir -p {{tmp_script_path}}"
+      when: script_url is defined
+      delegate_to: localhost
+    - name: download  zip
+      #get_url:
+      #  timeout: 60
+      #  url: "{{source_url}}"
+      #  dest: "{{tmp_src_path}}/"
+      shell: "wget -nc -q --content-disposition {{source_url}} -P {{tmp_src_path}}"
+      when: source_url is defined
+      delegate_to: localhost
+    - name: download script
+      #shell: "wget -O {{tmp_path}}/{{script_file}} {{script_url}}"
+      get_url:
+        timeout: 60
+        url: "{{script_url}}"
+        dest: "{{tmp_script_path}}/{{script_file}}"
+      when: script_url is defined
+      delegate_to: localhost
+    - name: copy file to remote 
+      copy:
+        src: "{{tmp_src_path}}/"
+        dest: "{{base_path}}"
+        mode: u+rwx
+        backup: yes
+      when: source_url is defined and ansible_os_family != "Windows"
+    - name: copy file to remote 
+      copy:
+        src: "{{tmp_script_path}}/"
+        dest: "{{base_path}}"
+        mode: u+rwx
+        force: yes
+      when: script_url is defined and ansible_os_family != "Windows"
+    - name: Execute
+      shell: "cd  {{base_path}} && sh {{script_file}}"
+      when: script_file is defined and ansible_os_family != "Windows"
+    - name: add source file
+      #win_get_url:
+      #  url: "{{ source_url }}"
+      #  dest: '{{base_path}}'
+      win_copy:
+         src: "{{tmp_src_path}}/"
+         dest: "{{base_path}}"
+      when:  source_url is defined and ansible_os_family == "Windows"
+    - name: add script file
+      #win_get_url:
+      #  url: "{{ script_url }}"
+      #  dest: '{{base_path}}/{{ script_file }}'
+      win_copy:
+        src: "{{tmp_script_path}}/"
+        dest: "{{base_path}}"
+        force: yes
+      when:  script_url is defined and ansible_os_family == "Windows"
+    - win_shell: "{{base_path}}/{{script_file}}"
+      when:  script_url is defined and ansible_os_family == "Windows"
+    

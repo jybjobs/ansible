@@ -1,0 +1,21 @@
+---
+# tasks file for haproxy
+ - name: install
+   include: ./install.yml  
+   when: deploy_ops is undefined or deploy_ops  == 'install'
+ - name: config frontend pool
+   include: ./config_frontend.yml
+   when: deploy_ops is defined and  deploy_ops  == 'config_frontend'
+ - name: config backend pool
+   include: ./config_backend.yml
+   when: deploy_ops is defined and  deploy_ops  == 'config_backend'
+ - name: config member
+   include: ./config_member.yml
+   when: deploy_ops is defined and  deploy_ops  == 'config_member' 
+ - name: config tcp  
+   include: ./config_tcp.yml
+   when: deploy_ops is defined and  deploy_ops  == 'config_tcp' 
+ #- name: haproxy server start
+ #  service: 
+ #    name: haproxy
+ #    state: restarted

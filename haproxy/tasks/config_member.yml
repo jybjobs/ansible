@@ -1,0 +1,24 @@
+---
+# tasks file for haproxy
+ - name: rm member config file
+   lineinfile:
+        dest: "/etc/haproxy/conf.d/{{var_frontend_name}}-d-{{var_backend_name}}.cfg"  
+        regexp: '^  server {{item.id }} '
+        state: absent
+   with_items: "{{var_servers}}"
+   when: config_ops is defined and config_ops in ('delete','add')
+ - name: add member  config file
+   lineinfile:
+        dest: "/etc/haproxy/conf.d/{{var_frontend_name}}-d-{{var_backend_name}}.cfg"
+        line: "  server {{item.id}} {{item.host}}:{{item.port}} check {{item.balances}}"
+   with_items: "{{var_servers}}"
+   when: config_ops is defined and config_ops== 'add'
+ - name: update member  config file
+   lineinfile:
+        dest: "/etc/haproxy/conf.d/{{var_frontend_name}}-d-{{var_backend_name}}.cfg"
+        regexp: '^  server {{ item.id }} '
+        line: "  server {{item.id}} {{item.host}}:{{item.port}} check {{item.balances}}"
+   with_items:  "{{var_servers}}"
+   when: config_ops is defined and config_ops== 'update'
+ - name: restart
+   shell: /bin/bash /tmp/haconfig.sh

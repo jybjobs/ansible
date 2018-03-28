@@ -1,0 +1,45 @@
+global                                                
+  log         127.0.0.1 local2                   
+  chroot      /usr/local/haproxy                
+{% if var_maxconn is defined %}
+  maxconn    {{ var_maxconn }}
+{% elif var_maxconn is undefined %}
+  maxconn    4500
+{% endif -%}
+                         
+  user        haproxy                              
+  group     haproxy                               
+  daemon                                             
+  stats socket /usr/local/haproxy/stats
+
+defaults
+  mode                    http                     
+  log                     global                 
+  option                  httplog                                                                               
+  option                  dontlognull     
+  option http-server-close                  
+  option                  redispatch
+{% if var_keep_alive is defined %}
+  option                  http-keep-alive
+  timeout http-keep-alive {{ var_keep_alive }}
+{% else %}
+  timeout http-keep-alive 10s
+{% endif -%}                
+  retries                 3                             
+  timeout http-request    10s             
+  timeout queue           1m               
+  timeout connect         10s            
+  timeout client          1m                
+  timeout server          1m              
+  timeout http-keep-alive 10s           
+  timeout check           10s             
+  maxconn                 3000
+###### moniter #########
+listen stats
+  bind :12345
+  stats enable
+  #stats hide-version
+  stats uri /stats
+  stats realm Haproxy\ Statistics
+  stats auth admin:admin123
+  stats admin if TRUE

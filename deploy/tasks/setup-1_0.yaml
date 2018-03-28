@@ -1,0 +1,44 @@
+---
+    - name: yum install tools
+      yum: 
+        name: wget
+        state: present
+      yum:
+        name: tar
+        state: present
+      when: ansible_distribution ==  "CentOS"
+    - name: apt install tools
+      apt:
+        name: wget
+        state: present
+      apt:
+        name: tar
+        state: present
+      when: ansible_distribution ==  "Ubuntu"
+    - name: download  zip  
+      shell: "wget --content-disposition {{source_url}} -P {{base_path}}"
+      when: source_url is defined
+    - name: download script
+      shell: "wget -O {{base_path}}/{{script_file}} {{script_url}}"
+      when: script_file is defined and ansible_os_family != "Windows"
+    - name: add Execute permissions
+      file:
+        path: "{{base_path}}"
+        mode:  "u+wx"
+        recurse: yes #递归
+      when: script_file is defined and ansible_os_family != "Windows"
+    - name: Execute
+      shell: "cd  {{base_path}} && sh {{script_file}}"
+      when: script_file is defined and ansible_os_family != "Windows"
+    - name: add source file
+      win_get_url:
+        url: "{{ source_url }}"
+        dest: '{{base_path}}'
+      when:  source_url is defined and ansible_os_family == "Windows"
+    - name: add script file
+      win_get_url:
+        url: "{{ script_url }}"
+        dest: '{{base_path}}/{{ script_file }}'
+      when:  script_url is defined and ansible_os_family == "Windows"
+    - win_shell: "cd  {{base_path}} && {{script_file}}"
+      when:  script_url is defined and ansible_os_family == "Windows"

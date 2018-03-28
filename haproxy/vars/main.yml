@@ -1,0 +1,7 @@
+---
+# vars file for haproxy
+var_manageKey: ls sdjfksd
+var_soft_download: http://192.168.71.158
+var_mode: single
+var_pool_name: "02"
+var_frontend_name: default

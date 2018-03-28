@@ -1,0 +1,57 @@
+global                                                
+  log         127.0.0.1 local2                   
+  chroot      /usr/local/haproxy                
+{% if var_maxconn is defined %}
+  maxconn    {{ var_maxconn }}
+{% elif var_maxconn is undefined %}
+  maxconn    4500
+{% endif -%}
+                         
+  user        haproxy                              
+  group     haproxy                               
+  daemon                                             
+  stats socket /usr/local/haproxy/stats
+
+defaults
+  mode                    http                     
+  log                     global                 
+  option                  httplog                                                                               
+  option                  dontlognull     
+  option http-server-close                  
+  option                  redispatch                
+  retries                 3                             
+  timeout http-request    10s             
+  timeout queue           1m               
+  timeout connect         10s            
+  timeout client          1m                
+  timeout server          1m              
+  timeout http-keep-alive 10s           
+  timeout check           10s             
+  maxconn                 3000
+
+frontend  main
+{% if var_port is defined %} 
+  bind *:{{var_port}}
+{% elif var_port is undefined %}
+  bind *:80
+{% endif -%}                           
+  acl url_static       path_beg       -i /static /images /javascript /stylesheets
+  acl url_static       path_end       -i .jpg .gif .png .css .js
+  use_backend static          if url_static
+  default_backend             my_webserver   
+
+backend static                                             
+  balance     roundrobin                            
+  server      static 127.0.0.1:80 check
+      
+backend my_webserver
+{% if var_balance is defined %}                   
+  balance     {{var_balance}}
+{% elif var_balance is undefined %}
+  balance     roundrobin
+{% endif -%}
+{% if var_node_str is defined %}
+{% for ip in var_node_str %}
+  server webserver{{100|random}} {{ ip }}:{{var_port}} check
+{% endfor %}
+{% endif -%}    

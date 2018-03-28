@@ -1,0 +1,26 @@
+---
+
+- hosts: all
+  #sudo: yes
+  gather_facts: yes
+  vars_files:
+    - "/etc/ansible/roles/deploy/defaults/main.yml"
+  tasks:
+    #- include: "/etc/ansible/roles/{{item}}/tasks/main.yml"
+    #  with_items: "{{roless}}"
+    - name: include roles 
+      include_role:  
+         allow_duplicates: no 
+         name: "{{ roless }}"
+      #when: roless is defined
+
+    - name: deploy role
+      include: "/etc/ansible/roles/deploy/tasks/main.yml"
+      #when: deploy =='true'
+
+    - name: start service by default command
+      shell: /bin/bash /tmp/start.sh
+      when: roless is defined and roless == 'java'
+
+      
+

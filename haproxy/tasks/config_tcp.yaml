@@ -1,0 +1,12 @@
+---
+# tasks file for haproxy
+ - name: delete config file
+   shell: rm -rf /etc/haproxy/conf.d/{{var_frontend_name}}*  
+   when: config_ops is defined and config_ops in ( 'add', 'delete','update') 
+ - name: sync haproxy config file
+   template:
+     src: tcp-haproxy.cfg.j2
+     dest: /etc/haproxy/conf.d/{{var_frontend_name}}.cfg
+   when: config_ops is defined and config_ops in ( 'add','update')
+ - name: restart
+   shell: /bin/bash /tmp/haconfig.sh

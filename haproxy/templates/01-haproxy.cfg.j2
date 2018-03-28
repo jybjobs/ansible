@@ -1,0 +1,22 @@
+######### lb pool #############
+frontend  {{var_frontend_name }}
+{% if var_port is defined %}
+  bind *:{{var_port}}
+{% elif var_port is undefined %}
+  bind *:80
+{% endif -%}                           
+
+{% if var_protocol is defined and var_protocol == 'tcp' %}
+  mode {{var_protocol}}
+  log global
+  option tcplog
+  timeout client 3600s
+  backlog 4096
+{% else %}
+  mode http
+  #  acl url_static       path_beg       -i /static /images /javascript /stylesheets
+  #  acl url_static       path_end       -i .jpg .gif .png .css .js
+  #  use_backend static          if url_static
+  #  default_backend             static
+{% endif -%}
+##{{var_frontend_name }} end #############

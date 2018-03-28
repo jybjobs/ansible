@@ -1,0 +1,29 @@
+######### lb pool #############
+frontend  {{var_frontend_name }}
+{% if var_port is defined %}
+  bind *:{{var_port}}
+{% endif -%}                           
+  mode {{var_protocol}}
+  log global
+  option tcplog
+  timeout client 3600s
+  backlog 4096
+  default_backend    {{var_frontend_name}}-{{var_backend_name}}
+{% endif -%}
+##{{var_frontend_name }} end #############
+## var_backend {{var_frontend_name}}-{{var_backend_name}}      
+backend {{var_frontend_name}}-{{var_backend_name}}
+{% if var_balance is defined %}                   
+  balance     {{var_balance}}
+{% elif var_balance is undefined %}
+  balance  {{var_balance}}
+  timeout  connect 1s
+  timeout  queue 5s
+  timeout  server 3600s
+{% endif -%}
+{% if var_servers is defined %}
+ {% for s in var_servers %}
+ server {{ s.id }} {{ s.host }}:{{ s.port }} check {{ s.balances }}
+ {% endfor %}
+{% endif -%}
+
